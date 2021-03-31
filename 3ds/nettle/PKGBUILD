@@ -1,0 +1,38 @@
+# Maintainer:  Dave Murphy <davem@devkitpro.org>
+
+pkgname=3ds-nettle
+pkgver=3.6
+pkgrel=1
+pkgdesc='A low-level cryptographic library'
+arch=('any')
+url='https://www.lysator.liu.se/~nisse/nettle/'
+license=('custom')
+options=(!strip libtool staticlibs)
+groups=('3ds-portlibs')
+makedepends=('3ds-pkg-config' 'devkitpro-pkgbuild-helpers' 'gcc')
+source=("https://ftp.gnu.org/gnu/nettle/nettle-$pkgver.tar.gz")
+sha256sums=('d24c0d0f2abffbc8f4f34dcf114b0f131ec3774895f3555922fe2f40f3d5e3f1')
+build() {
+  cd nettle-$pkgver
+
+  source /opt/devkitpro/devkitarm.sh
+  source /opt/devkitpro/3dsvars.sh
+
+  ./configure --prefix="${PORTLIBS_PREFIX}" --host=arm-none-eabi \
+    --disable-shared --enable-static
+  make
+}
+
+package() {
+  cd nettle-$pkgver
+
+  source /opt/devkitpro/devkitarm.sh
+  source /opt/devkitpro/3dsvars.sh
+
+  # licenses
+  install -Dm644 COPYING.LESSERv3 "$pkgdir"${PORTLIBS_PREFIX}/licenses/$pkgname/COPYING.LESSERv3
+  install -Dm644 COPYINGv2 "$pkgdir"${PORTLIBS_PREFIX}/licenses/$pkgname/COPYINGv2
+  install -Dm644 COPYINGv3 "$pkgdir"${PORTLIBS_PREFIX}/licenses/$pkgname/COPYINGv3
+
+  make DESTDIR="$pkgdir" install
+}
